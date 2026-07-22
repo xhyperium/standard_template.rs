@@ -3,11 +3,6 @@ name: CI (Rust)
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "Cargo.toml"
-      - "src/**"
-      - "rust-toolchain.toml"
-      - ".github/workflows/ci-rust.yml"
 
   workflow_dispatch:
 
