@@ -13,4 +13,7 @@ members = ["."]
 
 [workspace.dependencies]
 
+[workspace.lints.rust]
+unused_must_use = "warn"
+
 [dependencies]

@@ -1,0 +1,73 @@
+name: 公开 API
+
+# DEFER-5：核心 crate 公开 API baseline 门禁（PLAN-CORE-PROD-002 W5 / infra-asa.6）
+# 意外 public API 变更 → job 失败；PR label `api-breaking` 时允许 diff（仍打印）。
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "crates/kernel/**"
+      - "crates/testkit/**"
+      - "crates/types/decimal/**"
+      - "crates/types/canonical/**"
+      - "crates/contracts/**"
+      - "docs/api-baselines/**"
+      - "scripts/quality-gates/check-public-api.mjs"
+      - ".github/workflows/public-api.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  public-api:
+    name: Public API baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Rust 工具链（stable + nightly for rustdoc JSON）
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          components: rust-src
+
+      - name: 安装 stable（workspace 默认）
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: 安装 cargo-public-api
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-public-api
+
+      - name: 检测 api-breaking label
+        id: flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          allow=false
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            labels='${{ toJson(github.event.pull_request.labels.*.name) }}'
+            if echo "$labels" | grep -q '"api-breaking"'; then
+              allow=true
+            fi
+          fi
+          echo "allow_breaking=${allow}" >> "$GITHUB_OUTPUT"
+          echo "allow_breaking=${allow}"
+
+      - name: 比对公开 API baseline
+        env:
+          PUBLIC_API_ALLOW_BREAKING: ${{ steps.flags.outputs.allow_breaking == 'true' && '1' || '0' }}
+          # cargo-public-api 通过 rustdoc JSON 需要 nightly
+          RUSTUP_TOOLCHAIN: nightly
+        run: node scripts/quality-gates/check-public-api.mjs --require-tool

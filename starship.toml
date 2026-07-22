@@ -1,0 +1,28 @@
+# starship.toml — infra.rs Starship 提示配置
+#
+# 使用方式:
+#   ln -s $PWD/starship.toml ~/.config/starship.toml
+#   或: export STARSHIP_CONFIG=/path/to/infra.rs/starship.toml
+
+# ── 显示顺序 ──────────────────────────────
+
+format = """
+$custom\
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$cmd_duration\
+$line_break\
+$character\
+"""
+
+# ── Worktree 状态 (自定义模块) ────────────
+
+[custom.wt]
+description = "infra.rs Git Worktree 状态"
+command = "scripts/starship-wt.mjs"
+when = "scripts/starship-wt.mjs"
+format = "[$symbol$output]($style)"
+style = "bold cyan"
+symbol = "⛓️ "

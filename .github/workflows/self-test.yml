@@ -1,0 +1,36 @@
+name: 模块自验证
+on:
+  pull_request:
+    branches: [main]
+    paths: ["scripts/**", ".claude/hooks/**", ".claude/settings.json", ".github/workflows/self-test.yml"]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  scripts-lint:
+    name: Scripts L0（语法）
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scripts L0 语法检查
+        run: node scripts/self-test.mjs --scripts --lint-only
+  hooks-lint:
+    name: Hooks L0（语法）
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hooks L0 语法检查
+        run: node scripts/self-test.mjs --hooks --lint-only
+  scripts-test:
+    name: Scripts L1（逻辑测试）
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scripts L1 逻辑测试
+        run: node scripts/self-test.mjs --scripts
+    continue-on-error: false

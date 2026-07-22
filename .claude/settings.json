@@ -4,6 +4,24 @@
       {
         "hooks": [
           {
+            "command": "nice -n 19 timeout 30 node .claude/hooks/edit-guard.mjs || exit 2",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "nice -n 19 timeout 30 node .claude/hooks/count-guard.mjs || exit 2",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      },
+      {
+        "hooks": [
+          {
             "command": "nice -n 19 timeout 30 node .claude/hooks/encoding-check.mjs || exit 2",
             "type": "command"
           }
@@ -13,7 +31,7 @@
     ],
     "PostToolUse": [
       {
-        "description": "批量编码巡检",
+        "description": "批量编码巡��",
         "hooks": [
           {
             "command": "nice -n 19 timeout 15 node .claude/hooks/encoding-batch-check.mjs",
@@ -21,6 +39,28 @@
           }
         ],
         "matcher": "Edit|Write"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "nice -n 19 timeout 30 node .claude/hooks/session-context.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "nice -n 19 timeout 30 node .claude/hooks/session-review.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
       }
     ]
   }
