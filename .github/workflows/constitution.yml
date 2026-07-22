@@ -1,0 +1,88 @@
+name: Constitution
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  constitution:
+    name: Constitution Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect scope
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "run_full=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          mapfile -t files < <(git diff --name-only "$BASE...$HEAD" || true)
+          run_full=false
+          patterns=(
+            '^Cargo\.toml$'
+            '\.rs$'
+            '^deny\.toml$'
+            '^rust-toolchain\.toml$'
+            '^rustfmt\.toml$'
+            '^clippy\.toml$'
+            '^\.github/workflows/constitution\.yml$'
+          )
+          for f in "${files[@]+"${files[@]}"}"; do
+            for p in "${patterns[@]}"; do
+              if [[ "$f" =~ $p ]]; then
+                run_full=true
+                break 2
+              fi
+            done
+          done
+          echo "run_full=${run_full}" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust toolchain
+        if: steps.scope.outputs.run_full == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        if: steps.scope.outputs.run_full == 'true'
+
+      - name: Install cargo-deny
+        if: steps.scope.outputs.run_full == 'true'
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+
+      - name: Format check
+        if: steps.scope.outputs.run_full == 'true'
+        run: cargo fmt --all -- --check
+
+      - name: Clippy
+        if: steps.scope.outputs.run_full == 'true'
+        run: cargo clippy --all-features -- -D warnings
+
+      - name: Dependency audit
+        if: steps.scope.outputs.run_full == 'true'
+        run: cargo deny check
+
+      - name: Docs-only skip
+        if: steps.scope.outputs.run_full != 'true'
+        run: |
+          echo "No Rust/config paths in this PR."
+          echo "Constitution Check reports success."

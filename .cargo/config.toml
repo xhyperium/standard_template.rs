@@ -1,0 +1,4 @@
+# .cargo/ configuration
+
+[build]
+target-dir = ".cargo/target/"

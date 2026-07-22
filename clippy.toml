@@ -1,0 +1,15 @@
+# Clippy 配置 — 调整 lint 行为阈值
+#
+# 注：lint 的启用/禁用通过 crate 属性或 cargo clippy 参数控制，
+# 本文件仅用于调整启用的 lint 的具体行为。
+
+# ── 代码复杂度阈值 ────────────────────────
+
+too-many-arguments-threshold = 8
+too-many-lines-threshold = 500
+type-complexity-threshold = 400
+
+# ── 文档与命名 ────────────────────────────
+
+# 文档中的标识符用反引号包裹
+doc-valid-idents = ["Error", "Result", "Io", "Config"]

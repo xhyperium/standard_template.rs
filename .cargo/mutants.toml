@@ -1,0 +1,4 @@
+# cargo-mutants 默认配置
+# https://mutants.rs/config-file.html
+
+output = ".cargo/cache/mutants"

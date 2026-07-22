@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: 提问与讨论
+    url: https://github.com/xhyperium/infra.rs/discussions
+    about: 一般性问题请到 Discussions 提问与讨论。

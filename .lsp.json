@@ -1,0 +1,14 @@
+{
+  "mjs": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"]
+  },
+  "js": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"]
+  },
+  "json": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"]
+  }
+}

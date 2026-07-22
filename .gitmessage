@@ -1,0 +1,19 @@
+
+# ==== infra.rs 提交信息模板 ====
+# 格式：<type>[!][(scope)]: <中文简述>
+#
+# type（必选）: feat | fix | chore | docs | refactor | test | perf | ci | style | build
+# !        （可选）: BREAKING CHANGE 标记
+# scope   （可选）: kernel|testkit|configx|observex|resiliencx|bootstrap|...
+#
+# 示例:
+#   feat(kernel): 新增生命周期回调
+#   fix!: 修复竞态导致的数据不一致
+#   chore(layout): 补齐 testkit 标准布局缺口
+#
+# ==== 正文（可选，空行与标题隔开）====
+# - 叙��变更原因、影响范围
+# - 破坏性变更以 BREAKING CHANGE: 开头
+#
+# ==== 引用（可选）====
+# Refs: #123
