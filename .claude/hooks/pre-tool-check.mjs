@@ -172,7 +172,7 @@ if (tool === "Write" || tool === "Edit") {
 
   // ── Worktree 硬门禁（CONSTITUTION §6.0.5）──
   // 主仓路径 Write/Edit 一律拦截；必须在 .worktrees/<branch>/ 内改文件。
-  // 紧急绕过：INFRA_WORKTREE_BYPASS=1（仅人工 maintainer）
+  // 紧急绕过：STANDARD_TEMPLATE_WORKTREE_BYPASS=1（仅人工 maintainer）
   const editGate = evaluateEditPath({
     projectRoot,
     filePath: resolvedTarget || filePath,
