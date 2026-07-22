@@ -1,0 +1,91 @@
+name: 质量
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "Cargo.toml"
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - "rustfmt.toml"
+      - "clippy.toml"
+      - ".github/workflows/quality.yml"
+
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check-rust:
+    name: 检测 Rust 源码
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      has-rust: ${{ steps.check.outputs.has-rust }}
+      has-src: ${{ steps.check.outputs.has-src }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          HAS_CARGO=false
+          HAS_SRC=false
+          [ -f Cargo.toml ] && HAS_CARGO=true
+          if [ -d crates ] || find . -name '*.rs' -not -path './.cargo/*' -not -path './.git/*' | grep -q .; then
+            HAS_SRC=true
+          fi
+          echo "has-rust=$HAS_CARGO" >> "$GITHUB_OUTPUT"
+          echo "has-src=$HAS_SRC" >> "$GITHUB_OUTPUT"
+
+  fmt:
+    name: 格式检查（rustfmt）
+    needs: check-rust
+    if: needs.check-rust.outputs.has-src == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: 检查格式
+        run: cargo fmt --all --check
+
+  clippy:
+    name: Clippy 静态检查
+    needs: check-rust
+    if: needs.check-rust.outputs.has-rust == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: 运行 clippy
+        run: cargo clippy --workspace --all-features --all-targets -- -D warnings
+
+  doc:
+    name: 文档检查（cargo doc）
+    needs: check-rust
+    if: needs.check-rust.outputs.has-src == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CARGO_INCREMENTAL: 0
+      RUSTDOCFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: 生成文档并检查警告
+        run: cargo doc --workspace --all-features --no-deps --document-private-items

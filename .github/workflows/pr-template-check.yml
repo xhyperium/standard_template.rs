@@ -1,0 +1,64 @@
+name: PR Template Check
+
+# PR 描述模板合规性校验
+# 检查提交者是否在 PR body 中填写了模板要求的必填字段
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize]
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  template-check:
+    name: Template Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PR template
+        id: check
+        run: |
+          node scripts/quality-gates/check-pr-template.mjs 2>&1 | tee /tmp/check-result.txt
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        continue-on-error: true
+
+      - name: Notify on failure
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('/tmp/check-result.txt', 'utf8');
+            const errors = [];
+            const warnings = [];
+            for (const line of result.split('\n')) {
+              if (line.includes('::error::')) errors.push(line.replace(/.*::error::/, ''));
+              if (line.includes('::warning::')) warnings.push(line.replace(/.*::warning::/, ''));
+            }
+            const body = '## Template Validation 失败\n\n' +
+              'PR 描述不符合模板格式。请参考 PULL_REQUEST_TEMPLATE.md 更新。\n\n' +
+              (errors.length ? '### 必须修复\n' + errors.map(e => '- ' + e.trim()).join('\n') + '\n\n' : '') +
+              (warnings.length ? '### 建议改进\n' + warnings.map(w => '- ' + w.trim()).join('\n') : '');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Fail if check failed
+        if: steps.check.outcome == 'failure'
+        run: exit 1

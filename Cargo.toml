@@ -8,4 +8,9 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/xhyperium/standard_template.rs"
 authors = ["xhyperium"]
 
+[workspace]
+members = ["."]
+
+[workspace.dependencies]
+
 [dependencies]
