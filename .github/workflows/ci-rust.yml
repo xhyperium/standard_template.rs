@@ -30,6 +30,8 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "rust-cache-stdio-template"
       - name: Check
         run: cargo check --all-features
       - name: Build
@@ -47,6 +49,8 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "rust-cache-stdio-template"
       - name: Install cargo-nextest
         uses: taiki-e/install-action@v2
         with:
@@ -66,6 +70,8 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "rust-cache-stdio-template"
       - name: Format check
         run: cargo fmt --all -- --check
       - name: Clippy
@@ -83,6 +89,8 @@ jobs:
       - name: Install MSRV Rust toolchain
         uses: dtolnay/rust-toolchain@1.85
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "rust-cache-stdio-template"
       - name: Build on MSRV
         run: cargo build --all-features
 
@@ -100,6 +108,8 @@ jobs:
         with:
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "rust-cache-stdio-template"
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@v2
         with:

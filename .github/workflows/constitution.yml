@@ -62,6 +62,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         if: steps.scope.outputs.run_full == 'true'
+        with:
+          prefix-key: "rust-cache-stdio-template"
 
       - name: Install cargo-deny
         if: steps.scope.outputs.run_full == 'true'
