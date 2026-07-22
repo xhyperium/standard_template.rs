@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * starship-wt.mjs — Starship Worktree 模块（替代 starship-wt.mjs）
+ * starship-wt.mjs — Starship Worktree 模块
  *
  * 职责: 输出当前 worktree 状态供 Starship 自定义模块使用。
  *
@@ -9,12 +9,11 @@
  *   command = "node scripts/shell/starship-wt.mjs"
  *
  * 输出:
- *   main       — 在 infra.rs 主工作区
+ *   main       — 在 standard_template 主工作区
  *   feat/xxx   — 在 worktree 中
- *   (无输出)    — 不在 infra.rs 仓库中
+ *   (无输出)    — 不在 standard_template 仓库中
  *
  * SSOT: starship.toml
- * 替代: scripts/shell/starship-wt.mjs (已迁移)
  */
 
 import { execSync } from "child_process";
@@ -33,8 +32,8 @@ try {
   process.exit(0);
 }
 
-// 仅在 infra.rs 仓库内
-if (!repoRoot.endsWith("infra.rs")) process.exit(0);
+// 仅在 standard_template 仓库内
+if (!repoRoot.endsWith("standard_template.rs")) process.exit(0);
 
 // 在 worktree 中
 const wtPrefix = repoRoot + "/.worktrees/";

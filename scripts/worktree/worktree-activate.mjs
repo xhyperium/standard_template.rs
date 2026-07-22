@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * worktree-activate.mjs — Shell 集成（替代 worktree-activate.mjs）
+ * worktree-activate.mjs — Shell 集成
  *
  * 职责: 输出 shell 代码供 source/eval 加载：wt 函数 + tab 补全 + PROMPT 注入。
  *
@@ -8,18 +8,17 @@
  *   eval "$(node scripts/worktree/worktree-activate.mjs)"    # 加载到当前 shell
  *
  * SSOT: docs/constitution/06-governance.md §6.0.5 / docs/governance/worktree-policy.md
- * 替代: scripts/worktree/worktree-activate.mjs (已迁移)
  */
 
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, "..");
+const ROOT = resolve(__dirname, "../..");
 const WT_SCRIPT = resolve(__dirname, "worktree.mjs");
 
 const output = `
-# ── infra.rs Worktree Shell 集成 ──────────
+# ── standard_template Worktree Shell 集成 ──────────
 
 WT_SCRIPT="${WT_SCRIPT}"
 WT_ROOT="${ROOT}"
