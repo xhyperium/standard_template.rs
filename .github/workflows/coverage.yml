@@ -1,0 +1,48 @@
+name: Coverage
+
+# 工作空间级覆盖率 workflow（可作为各 crate 的模板）
+# 使用方式：copy 此文件为 <crate>-coverage.yml，修改 paths 和 job 内的 package 参数
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/coverage.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  line-coverage:
+    name: 行覆盖率
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+      - name: 安装 cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+      - name: 运行覆盖率
+        env:
+          RUSTUP_TOOLCHAIN: nightly
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+      - name: 上传覆盖率报告
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov-info
+          path: lcov.info

@@ -1,0 +1,88 @@
+{
+  "version": "0.2",
+  "language": "en,zh",
+  "dictionaries": [
+    "standard-template",
+    "rust-crates"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "standard-template",
+      "words": [
+        "clippy",
+        "cspell",
+        "gitmessage",
+        "MSRV",
+        "MSVC",
+        "newtype",
+        "nextest",
+        "println",
+        "rlib",
+        "rustc",
+        "rustdoc",
+        "RUSTDOCFLAGS",
+        "RUSTFLAGS",
+        "rustfmt",
+        "rustls",
+        "serde",
+        "submodules",
+        "subresources",
+        "taplo",
+        "toplevel",
+        "tracing",
+        "Uninit",
+        "unix",
+        "usize",
+        "worktree",
+        "xhyperium",
+        "yamllint",
+        "Zsanitizer"
+      ]
+    },
+    {
+      "name": "rust-crates",
+      "words": [
+        "thiserror",
+        "async",
+        "asyncronous",
+        "backoff",
+        "tokio",
+        "tracing",
+        "thiserror",
+        "futures",
+        "chrono",
+        "hex",
+        "base64",
+        "sha1",
+        "sha2",
+        "webpki",
+        "syn",
+        "quote",
+        "proc",
+        "macro",
+        "snake",
+        "camel",
+        "derive",
+        "dyn",
+        "impl",
+        "trait",
+        "enum",
+        "struct",
+        "unsafe",
+        "mustuse",
+        "deny",
+        "forbid"
+      ]
+    }
+  ],
+  "ignorePaths": [
+    "**/*.lock",
+    "*.generated.*",
+    ".cargo/**",
+    ".codebuddy/**",
+    ".git/**",
+    "Cargo.lock",
+    "node_modules/**",
+    "target/**"
+  ]
+}

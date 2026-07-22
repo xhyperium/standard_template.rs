@@ -1,0 +1,37 @@
+# 复用组织级 Rust Foundation CI（与本仓既有细粒度 workflow 并存）
+#
+# 组织 SSOT / 可复用定义：
+#   https://github.com/<your-org>/.github/blob/main/workflows/ci-rust-foundation.yml
+#
+# status checks（可供 org ruleset 引用）：
+#   rust-fmt · rust-clippy · rust-test · rust-deny
+#
+# 使用方法：
+#   1. 替换 <your-org> 为你的 GitHub 组织名
+#   2. 确保组织级 .github 仓库中有 ci-rust-foundation.yml 可复用 workflow
+#   3. 取消下方 jobs.org-rust 的注释以启用
+
+name: CI Rust（组织复用）
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-rust-org-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # 取消注释并替换 <your-org> 以启用组织级 CI 复用
+  # org-rust:
+  #   uses: <your-org>/.github/.github/workflows/ci-rust-foundation.yml@main
+  #   with:
+  #     rust_toolchain: "1.85"
+  #     run_deny: true
