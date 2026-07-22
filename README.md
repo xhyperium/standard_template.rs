@@ -1,6 +1,6 @@
-# stdio_template.rs
+# standard_template.rs
 
-A template for Rust **stdio-based programs**, pre-configured with the standard
+A standard template for Rust programs, pre-configured with the
 [infra.rs](https://github.com/xhyperium/infra.rs) management toolchain.
 
 Use **"Use this template"** on GitHub to bootstrap a new project, then rename

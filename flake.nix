@@ -1,4 +1,4 @@
-# flake.nix — stdio_template.rs Nix dev shell
+# flake.nix — standard_template.rs Nix dev shell
 #
 # Usage:
 #   nix develop          # enter dev shell (Rust toolchain + CI tools)
@@ -9,7 +9,7 @@
 #   - rust-overlay (for Rust toolchain)
 
 {
-  description = "stdio_template.rs — Rust stdio program template";
+  description = "standard_template.rs — Rust standard program template";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -44,7 +44,7 @@
           shellHook = ''
             export RUST_BACKTRACE=1
             echo ""
-            echo "  stdio_template.rs dev shell"
+            echo "  standard_template.rs dev shell"
             echo "  Rust: $(rustc --version 2>/dev/null || echo not found)"
             echo ""
           '';

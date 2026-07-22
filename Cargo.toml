@@ -1,11 +1,11 @@
 [package]
-name = "stdio_template"
+name = "standard_template"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "A template for Rust stdio-based programs"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/xhyperium/stdio_template.rs"
+repository = "https://github.com/xhyperium/standard_template.rs"
 authors = ["xhyperium"]
 
 [dependencies]

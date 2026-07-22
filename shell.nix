@@ -1,4 +1,4 @@
-# shell.nix — non-flake dev shell for stdio_template.rs (backwards compat)
+# shell.nix — non-flake dev shell for standard_template.rs (backwards compat)
 #
 # Usage:
 #   nix-shell          # enter dev shell
@@ -17,6 +17,6 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    echo "stdio_template.rs dev shell"
+    echo "standard_template.rs dev shell"
   '';
 }
