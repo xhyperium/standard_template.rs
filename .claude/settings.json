@@ -31,7 +31,7 @@
     ],
     "PostToolUse": [
       {
-        "description": "批量编码巡��",
+        "description": "批量编码巡",
         "hooks": [
           {
             "command": "nice -n 19 timeout 15 node .claude/hooks/encoding-batch-check.mjs",

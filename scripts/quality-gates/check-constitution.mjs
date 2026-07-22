@@ -108,7 +108,7 @@ if (!QUICK) {
   run("cargo doc", "cargo doc --no-deps --document-private-items");
 }
 
-// ��5 security
+// 5 security
 info("§5 安全审计 (cargo-deny)");
 try {
   execSync("cargo deny check", { cwd: ROOT, stdio: "pipe", timeout: 60_000 });

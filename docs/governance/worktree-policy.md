@@ -151,7 +151,7 @@ export STANDARD_TEMPLATE_WORKTREE_BYPASS=1
 ```
 
 - **AI Agent 不得**自行设置此变量绕过门禁
-- 使用后须在 PR / incident 记录原���，并在 72h 内补齐 worktree 流程与证据
+- 使用后须在 PR / incident 记录原，并在 72h 内补齐 worktree 流程与证据
 
 ---
 

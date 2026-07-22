@@ -2,7 +2,7 @@
 
 本仓库是**独立的 Rust 基础设施工作区**。所有 AI 编码助手（Claude Code、Codex、Copilot 等）共享本文件中的治理约定。
 
-## Rust 编码规范（强��）
+## Rust 编码规范（强）
 
 - **上位全局标准**：《[Rust 编码规范（完整版）v2.1.1](https://github.com/xhyperium/.github/blob/main/rulesets/rust/RULES.md)》——组织 SSOT：[`xhyperium/.github`](https://github.com/xhyperium/.github) → `rulesets/rust/`
 - **Agent 加载**：`~/.claude/rules/rust.md`、`language.md`（`setup-global-rules.sh`）；专项见同目录 `security` / `async-runtime` 等

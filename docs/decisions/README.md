@@ -7,7 +7,7 @@
 ```
 DDR-NNN: <简短标题>
 
-- 日��: YYYY-MM-DD
+- 日: YYYY-MM-DD
 - 状态: proposed | accepted | deprecated | superseded
 - 背景: 为什么需要决策
 - 决定: 做出了什么选择

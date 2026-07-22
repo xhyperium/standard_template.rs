@@ -114,7 +114,7 @@ cargo test --workspace        # 全部测试通过
 - 不提交 `.claude/*.local.json`、证书、密钥、`.env`
 - 不在对话中回显完整 API Token
 - 不削弱 `.gitignore` 对敏感路径的排除
-- 不执行 `git push --force`、`git push --no-verify`（除非用户明确要求��已确认风险）
+- 不执行 `git push --force`、`git push --no-verify`（除非用户明确要求已确认风险）
 - CI 使用 GitHub Secrets
 
 ## 治理体系

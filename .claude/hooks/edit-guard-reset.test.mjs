@@ -261,7 +261,7 @@ describe("parseToolResult — tool result JSON 解析", () => {
 
 describe("edit-guard-reset — 状态文件异常处理逻辑", () => {
   it("STATE_FILE 不存在 → 静默跳过（不报错）", () => {
-    // 逻辑等��：如果 existsSync(STATE_FILE) 返回 false，则不操作
+    // 逻辑等：如果 existsSync(STATE_FILE) 返回 false，则不操作
     // 源文件通过检查 existsSync 来跳过
     // L1 测试：验证这个逻辑分支的预期行为
     const stateFileExists = false;

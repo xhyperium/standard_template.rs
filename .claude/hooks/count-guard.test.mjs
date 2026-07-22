@@ -304,7 +304,7 @@ describe("BLOCK_PATTERNS — 组件总数", () => {
 
   it("'组件总数：abc' 不匹配", () => {
     const m = "组件总数：abc".match(pattern);
-    assert(m === null, "非数字字符不匹��");
+    assert(m === null, "非数字字符不匹");
   });
 
   it("匹配多位数", () => {
@@ -521,7 +521,7 @@ describe("scanBlockPatterns — BLOCK 模式扫描", () => {
   });
 });
 
-// ── 测试 10: scanCountPatterns ───��────────────────────────────
+// ── 测试 10: scanCountPatterns ───────────────────────────────
 
 describe("scanCountPatterns — WARN 模式扫描", () => {
   it("包含 X/Y 分数 → 检测到", () => {

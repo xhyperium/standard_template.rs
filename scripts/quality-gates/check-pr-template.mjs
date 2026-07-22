@@ -33,7 +33,7 @@ function error(msg, key = "") {
 }
 function notice(msg) { console.log(`::notice::${msg}`); }
 
-// 1. 变更类型��择
+// 1. 变更类型择
 if (/^\s*-\s*\[\s*x\s*\]/m.test(body)) {
   notice("变更类型: 已勾选");
 } else {

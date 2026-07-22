@@ -261,7 +261,7 @@ describe("tokenizeShellCommand — 反斜杠转义", () => {
 });
 
 describe("tokenizeShellCommand — 混合引号", () => {
-  // 注：双引号内遇到 ' 会切换为单引号模式，最后的 " 被视为单引号内的字面��符
+  // 注：双引号内遇到 ' 会切换为单引号模式，最后的 " 被视为单引号内的字面符
   it("双引号内单引号（quote 切换语义）", () => {
     const r = tokenizeShellCommand(`echo "it's ok"`);
     assert(r.length === 2, `len=2, got ${r.length}: ${JSON.stringify(r)}`);
