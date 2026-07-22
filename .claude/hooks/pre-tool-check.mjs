@@ -147,6 +147,11 @@ const parseWorktreeAdd = (command) => {
     positional.push(token);
   }
 
+  // 无显式 -b 时从路径 basename 推导分支名（git worktree add 原生行为）
+  if (!branch && positional[0]) {
+    branch = positional[0].split("/").filter(Boolean).pop() || positional[0];
+  }
+
   return {
     path: positional[0] || "",
     commitish: positional[1] || "",
