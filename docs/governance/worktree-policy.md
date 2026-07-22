@@ -66,7 +66,20 @@ standard_template.rs/           # 主工作区 (main) — 只读：review / buil
 - 单数根 `.worktree/`
 - 全局 `~/.worktrees/<project>/`
 
-### 3. 硬门禁（机器强制 BLOCK）
+### 3.1 自动分支名推导（无 `-b` 标志时）
+
+当 `git worktree add <path>` 未使用 `-b` / `-B` / `--branch` 显式指定分支名时，pre-tool-check 会从路径 `basename` 自动推导分支名，与 git 原生行为一致。
+
+| 命令 | 推导分支名 | 后续校验 |
+|------|-----------|----------|
+| `git worktree add .worktrees/feat/login -b feat/login` | `feat/login`（显式） | 路径匹配 `.worktrees/feat/login` → 放行 |
+| `git worktree add .worktrees/feat/login` | `login`（自动） | 分支命名违规（缺 `type/` 前缀）→ BLOCK |
+| `git worktree add ../test-2` | `test-2`（自动） | 分支命名 + 路径双重违规 → BLOCK |
+| `git worktree add .worktrees/fix/bug -b fix/bug` | `fix/bug`（显式） | 路径匹配 → 放行 |
+
+**关键行为**：无 `-b` 时 `git` 会以路径最后一段作为分支名。pre-tool-check 复制此逻辑，确保路径校验覆盖所有 `git worktree add` 调用场景，消除「无 `-b` 标志导致校验跳过」的防护缺口。
+
+### 3.2 硬门禁（机器强制 BLOCK）
 
 | 触发 | 行为 | 实现 |
 |------|------|------|
@@ -76,6 +89,7 @@ standard_template.rs/           # 主工作区 (main) — 只读：review / buil
 | 主工作区 `git checkout`/`switch` 到非 main 功能分支 | **BLOCK** | `pre-tool-check.mjs` |
 | 在 `main`/`master` 分支上 `git commit` | **BLOCK** | `pre-tool-check.mjs` |
 | `git worktree add` 路径 ≠ `.worktrees/<branch>` | **BLOCK** | `pre-tool-check.mjs` |
+| `git worktree add` 无 `-b` 标志 | 自动从路径 `basename` 推导分支名，再校验 | `pre-tool-check.mjs` |
 | 分支名缺少 type 前缀 | **BLOCK** | `pre-tool-check.mjs` |
 | SessionStart 在主仓 | **WARN + 开工指引** | `session-context.mjs` |
 

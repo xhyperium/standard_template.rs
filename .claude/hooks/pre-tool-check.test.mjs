@@ -3,11 +3,12 @@
  *
  * 测试范围：
  *  1. tokenizeShellCommand - 带引号/转义的 shell 命令解析
- *  2. parseWorktreeAdd - git worktree add 命令解析（各种 flag）
+ *  2. parseWorktreeAdd - git worktree add 命令解析（各种 flag，含自动分支名推导）
  *  3. PROTECTED_FILES 正则 — 匹配 .env/.env.local，不匹配 .env.example 等
  *  4. isBranchLikeRef - 分支引用校验
  *  5. ALLOWED_BRANCH 正则 — feat/ / fix/ / docs/ 等合法前缀
  *  6. DANGEROUS_COMMANDS 模式列表与匹配逻辑
+ *  7. parseWorktreeAdd 无 -b 自动推导 — 从路径 basename 推导分支名，覆盖所有调用场景
  *
  * 使用 ESM (.mjs)，纯 assert 模式（count pass/fail, exit 1 on failure）。
  */
