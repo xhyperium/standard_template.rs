@@ -629,9 +629,9 @@ const {
 
   test("isWorktreeBypassEnabled 读取环境变量", () => {
     assertOk(!isWorktreeBypassEnabled({}), "no env var → false");
-    assertOk(!isWorktreeBypassEnabled({ INFRA_WORKTREE_BYPASS: "0" }), "0 → false");
-    assertOk(isWorktreeBypassEnabled({ INFRA_WORKTREE_BYPASS: "1" }), "1 → true");
-    assertOk(!isWorktreeBypassEnabled({ INFRA_WORKTREE_BYPASS: "" }), "empty → false");
+    assertOk(!isWorktreeBypassEnabled({ STANDARD_TEMPLATE_WORKTREE_BYPASS: "0" }), "0 → false");
+    assertOk(isWorktreeBypassEnabled({ STANDARD_TEMPLATE_WORKTREE_BYPASS: "1" }), "1 → true");
+    assertOk(!isWorktreeBypassEnabled({ STANDARD_TEMPLATE_WORKTREE_BYPASS: "" }), "empty → false");
   });
 
   test("evaluateCommitOnMain 阻止 main 上 commit", () => {

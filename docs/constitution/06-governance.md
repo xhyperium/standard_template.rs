@@ -53,7 +53,7 @@ cd .worktrees/feat/my-feature
 - AI **不得**在 `main` 检出上直接改代码并提交
 - AI 开工前必须：`node scripts/worktree/worktree.mjs create …` 并 `cd` 进入 `.worktrees/…`
 - Session 钩子提供硬门禁与告警；**即使钩子未启用，本条款仍有效**——Agent 须自觉遵守
-- 紧急绕过仅限人工 maintainer 设置 `INFRA_WORKTREE_BYPASS=1`，并事后记录
+- 紧急绕过仅限人工 maintainer 设置 `STANDARD_TEMPLATE_WORKTREE_BYPASS=1`，并事后记录
 
 ### 6.0.7 一句话
 

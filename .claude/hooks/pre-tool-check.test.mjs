@@ -3,11 +3,12 @@
  *
  * 测试范围：
  *  1. tokenizeShellCommand - 带引号/转义的 shell 命令解析
- *  2. parseWorktreeAdd - git worktree add 命令解析（各种 flag）
+ *  2. parseWorktreeAdd - git worktree add 命令解析（各种 flag，含自动分支名推导）
  *  3. PROTECTED_FILES 正则 — 匹配 .env/.env.local，不匹配 .env.example 等
  *  4. isBranchLikeRef - 分支引用校验
  *  5. ALLOWED_BRANCH 正则 — feat/ / fix/ / docs/ 等合法前缀
  *  6. DANGEROUS_COMMANDS 模式列表与匹配逻辑
+ *  7. parseWorktreeAdd 无 -b 自动推导 — 从路径 basename 推导分支名，覆盖所有调用场景
  *
  * 使用 ESM (.mjs)，纯 assert 模式（count pass/fail, exit 1 on failure）。
  */
@@ -100,6 +101,11 @@ const parseWorktreeAdd = (command) => {
     }
     if (!passthrough && token.startsWith("-")) continue;
     positional.push(token);
+  }
+
+  // 无显式 -b 时从路径 basename 推导分支名（git worktree add 原生行为）
+  if (!branch && positional[0]) {
+    branch = positional[0].split("/").filter(Boolean).pop() || positional[0];
   }
 
   return {
@@ -310,11 +316,11 @@ describe("parseWorktreeAdd — 基本解析", () => {
     assert(r.commitish === "", `commitish=${r.commitish}`);
   });
 
-  it("无 -b 的 worktree add（detached）", () => {
+  it("无 -b 的 worktree add（从路径 basename 自动推导分支名）", () => {
     const r = parseWorktreeAdd("git worktree add .worktrees/tmp");
     assert(r !== null, "not null");
     assert(r.path === ".worktrees/tmp", `path=${r.path}`);
-    assert(r.branch === null, `branch=${r.branch}`);
+    assert(r.branch === "tmp", `branch=${r.branch} (auto-derived from basename)`);
     assert(r.commitish === "", `commitish=${r.commitish}`);
   });
 
@@ -378,7 +384,7 @@ describe("parseWorktreeAdd — -- 分隔符", () => {
     const r = parseWorktreeAdd("git worktree add path -- -b not-a-branch");
     assert(r !== null, "not null");
     assert(r.path === "path", `path=${r.path}`);
-    assert(r.branch === null, `branch=${r.branch}`);
+    assert(r.branch === "path", `branch=${r.branch} (auto-derived from basename 'path')`);
   });
 
   it("-- 后 positional 正常收集", () => {
@@ -386,17 +392,17 @@ describe("parseWorktreeAdd — -- 分隔符", () => {
     assert(r !== null, "not null");
     assert(r.path === "path", `path=${r.path}`);
     assert(r.commitish === "commit-ref", `commitish=${r.commitish}`);
-    assert(r.branch === null, `branch=${r.branch}`);
+    assert(r.branch === "path", `branch=${r.branch} (auto-derived from basename 'path')`);
   });
 });
 
 describe("parseWorktreeAdd — 未知 flag 跳过", () => {
-  it("未知 --flag 被跳过", () => {
+  it("未知 --flag 被跳过，分支名从 path 推导", () => {
     const r = parseWorktreeAdd("git worktree add --detach path target");
     assert(r !== null, "not null");
     assert(r.path === "path", `path=${r.path}`);
     assert(r.commitish === "target", `commitish=${r.commitish}`);
-    assert(r.branch === null, `branch=${r.branch}`);
+    assert(r.branch === "path", `branch=${r.branch} (auto-derived from basename 'path')`);
   });
 
   it("-f 等单字符 flag 被跳过", () => {
@@ -404,6 +410,62 @@ describe("parseWorktreeAdd — 未知 flag 跳过", () => {
     assert(r !== null, "not null");
     assert(r.path === "path", `path=${r.path}`);
     assert(r.branch === "feat/force", `branch=${r.branch}`);
+  });
+});
+
+describe("parseWorktreeAdd — 无 -b 时自动推导分支名", () => {
+  it("层级路径 feat/login → 从 basename 推导为 login", () => {
+    const r = parseWorktreeAdd("git worktree add .worktrees/feat/login");
+    assert(r !== null, "not null");
+    assert(r.path === ".worktrees/feat/login", `path=${r.path}`);
+    assert(r.branch === "login", `branch=${r.branch} (basename of nested path)`);
+  });
+
+  it("路径在 .worktrees/ 外 → 推导为路径最后一段", () => {
+    const r = parseWorktreeAdd("git worktree add ../test-2");
+    assert(r !== null, "not null");
+    assert(r.path === "../test-2", `path=${r.path}`);
+    assert(r.branch === "test-2", `branch=${r.branch}`);  // 会被命名规则拦截
+  });
+
+  it("绝对路径 /tmp/feat/x → 推导为 x", () => {
+    const r = parseWorktreeAdd("git worktree add /tmp/feat/x");
+    assert(r !== null, "not null");
+    assert(r.path === "/tmp/feat/x", `path=${r.path}`);
+    assert(r.branch === "x", `branch=${r.branch}`);
+  });
+
+  it("单级路径 feat/test → 推导为 test", () => {
+    const r = parseWorktreeAdd("git worktree add feat/test");
+    assert(r !== null, "not null");
+    assert(r.path === "feat/test", `path=${r.path}`);
+    assert(r.branch === "test", `branch=${r.branch}`);
+  });
+
+  it("路径含尾部斜杠 → 推导为最后有效段", () => {
+    const r = parseWorktreeAdd("git worktree add .worktrees/fix/bug/");
+    assert(r !== null, "not null");
+    assert(r.branch === "bug", `branch=${r.branch} (slash-stripped)`);
+  });
+
+  it("与显式 -b 并存 → 以 -b 为准", () => {
+    const r = parseWorktreeAdd("git worktree add .worktrees/fix/bug -b fix/real-name");
+    assert(r !== null, "not null");
+    assert(r.path === ".worktrees/fix/bug", `path=${r.path}`);
+    assert(r.branch === "fix/real-name", `branch=${r.branch} (explicit -b wins)`);
+  });
+
+  it("--branch= 指定 → 以显式值为准", () => {
+    const r = parseWorktreeAdd("git worktree add path --branch=feat/explicit");
+    assert(r !== null, "not null");
+    assert(r.branch === "feat/explicit", `branch=${r.branch} (--branch= wins)`);
+  });
+
+  it("仅 git worktree add（参数不足）→ null path, null branch", () => {
+    const r = parseWorktreeAdd("git worktree add");
+    assert(r !== null, "not null");
+    assert(r.path === "", `path=${r.path}`);
+    assert(r.branch === null, `branch=${r.branch} (no path to derive from)`);
   });
 });
 

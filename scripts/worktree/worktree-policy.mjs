@@ -7,6 +7,10 @@
  * 规范: .worktrees/<branch> (分支 / 保留为目录分隔符)
  *   - 与 worktree.mjs / worktree-activate.mjs 约定一致
  *
+ * 分支名自动推导: pre-tool-check.mjs 中的 parseWorktreeAdd 在
+ *   git worktree add 无 -b 标志时，自动从路径 basename 推导分支名，
+ *   与 git 原生行为一致，确保路径校验覆盖所有调用场景。
+ *
  * 审计: 检测 workspaces/ 子目录和 ~/.worktrees/ 全局旧格式残留
  *
  * 使用者: .claude/hooks/pre-tool-check.mjs / session-context.mjs
@@ -28,7 +32,7 @@ export const WORKTREE_PATH_RULE = ".worktrees/<branch-name>";
  * 紧急绕过环境变量（仅人工 maintainer）。
  * 设为 `1` 时 pre-tool-check 跳过 worktree 硬门禁。
  */
-export const WORKTREE_BYPASS_ENV = "INFRA_WORKTREE_BYPASS";
+export const WORKTREE_BYPASS_ENV = "STANDARD_TEMPLATE_WORKTREE_BYPASS";
 
 /** 旧路径模式关键词（审计时匹配） */
 const LEGACY_WORKSPACES_SEGMENT = "workspaces";

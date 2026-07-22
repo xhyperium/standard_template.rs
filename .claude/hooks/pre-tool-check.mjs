@@ -147,6 +147,11 @@ const parseWorktreeAdd = (command) => {
     positional.push(token);
   }
 
+  // 无显式 -b 时从路径 basename 推导分支名（git worktree add 原生行为）
+  if (!branch && positional[0]) {
+    branch = positional[0].split("/").filter(Boolean).pop() || positional[0];
+  }
+
   return {
     path: positional[0] || "",
     commitish: positional[1] || "",
@@ -172,7 +177,7 @@ if (tool === "Write" || tool === "Edit") {
 
   // ── Worktree 硬门禁（CONSTITUTION §6.0.5）──
   // 主仓路径 Write/Edit 一律拦截；必须在 .worktrees/<branch>/ 内改文件。
-  // 紧急绕过：INFRA_WORKTREE_BYPASS=1（仅人工 maintainer）
+  // 紧急绕过：STANDARD_TEMPLATE_WORKTREE_BYPASS=1（仅人工 maintainer）
   const editGate = evaluateEditPath({
     projectRoot,
     filePath: resolvedTarget || filePath,

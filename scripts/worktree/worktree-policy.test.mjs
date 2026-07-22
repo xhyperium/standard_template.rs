@@ -6,6 +6,7 @@
  */
 import {
   WORKTREE_PATH_RULE,
+  WORKTREE_BYPASS_ENV,
   bareBranch,
   canonicalWorktreePath,
   worktreeBasePath,
@@ -161,7 +162,7 @@ assert("resolveMainProjectRoot main root", resolveMainProjectRoot(root) === root
 
 // bypass env
 assert("bypass off", !isWorktreeBypassEnabled({}));
-assert("bypass on", isWorktreeBypassEnabled({ INFRA_WORKTREE_BYPASS: "1" }));
+assert("bypass on", isWorktreeBypassEnabled({ [WORKTREE_BYPASS_ENV]: "1" }));
 
 // describeBranchWorktreePath
 {
