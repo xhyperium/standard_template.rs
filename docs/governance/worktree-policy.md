@@ -192,6 +192,133 @@ export STANDARD_TEMPLATE_WORKTREE_BYPASS=1
 
 ---
 
+
+## 场景示例
+
+### 场景 A：rebase main 后清理
+
+当 main 分支有新的提交，功能分支需要 rebase 时：
+
+```bash
+# 1. 进入 worktree
+cd .worktrees/feat/my-feature
+
+# 2. 拉取最新 main
+git fetch origin
+
+# 3. rebase 到最新 main
+git rebase origin/main
+
+# 4. 解决冲突后推送
+git push --force-with-lease
+
+# 5. 合并 + 清理
+node scripts/worktree/worktree.mjs land feat/my-feature
+```
+
+`land` 命令会自动检测分支落后 `origin/main` 并执行 rebase，无需手动步骤。
+
+### 场景 B：cherry-pick 到现有 worktree
+
+当需要从其他分支挑选提交时：
+
+```bash
+# 1. 进入目标 worktree
+cd .worktrees/fix/bug-42
+
+# 2. cherry-pick 指定提交
+git fetch origin
+git cherry-pick abc1234
+
+# 3. 如有冲突，解决后继续
+git add .
+git cherry-pick --continue
+
+# 4. 推送 + 合并
+git push origin fix/bug-42
+node scripts/worktree/worktree.mjs land fix/bug-42
+```
+
+### 场景 C：跨 worktree 协作
+
+当两个功能分支需要同时开发时：
+
+```bash
+# 创建两个独立的 worktree
+node scripts/worktree/worktree.mjs create feat/api-v2
+node scripts/worktree/worktree.mjs create feat/ui-v2
+
+# 终端 1: API 开发
+cd .worktrees/feat/api-v2
+# 编辑 src/api/, 测试, 提交
+
+# 终端 2: UI 开发（并行，无需 stash）
+cd .worktrees/feat/ui-v2
+# 编辑 src/ui/, 测试, 提交
+
+# 分别合并
+cd /path/to/main
+node scripts/worktree/worktree.mjs land feat/api-v2
+node scripts/worktree/worktree.mjs land feat/ui-v2
+```
+
+### 场景 D：worktree 内冲突修复后手动清理
+
+当 PR 已合并但 worktree 清理失败时：
+
+```bash
+# 1. 确认 PR 状态
+gh pr view feat/my-feature --json state,mergeStateStatus
+
+# 2. 如已 MERGED，手动清理
+node scripts/worktree/worktree.mjs cleanup feat/my-feature
+
+# 3. 或逐步手动清理
+node scripts/worktree/worktree.mjs remove feat/my-feature
+git branch -D feat/my-feature     # 删除本地分支
+git fetch origin --prune           # 清理远程引用
+node scripts/worktree/worktree.mjs prune
+```
+
+### 场景 E：CI 失败后 worktree 修复流程
+
+当 CI 检测到问题需要修复时：
+
+```bash
+# 1. 进入 worktree
+cd .worktrees/fix/ci-issue
+
+# 2. 修复代码
+# 编辑文件，修正 CI 报错
+
+# 3. 提交并推送
+git add .
+git commit -m "fix: 修正 CI 报错"
+git push origin fix/ci-issue
+
+# 4. 等待 CI 通过后合并
+node scripts/worktree/worktree.mjs land fix/ci-issue
+```
+
+### 场景 F：误在主仓编辑后恢复
+
+如果 AI Agent 被拦截（blocked at main），正确开工流程：
+
+```bash
+# Agent 收到 block 提示后：
+node scripts/worktree/worktree.mjs create feat/my-task
+cd .worktrees/feat/my-task
+
+# 在 worktree 内编辑文件
+# Write/Edit 操作将正常放行
+
+# 提交并推送
+git add .
+git commit -m "feat: 实现新功能"
+git push origin feat/my-task
+gh pr create --base main --fill
+```
+
 ## 相关文件
 
 | 文件 | 职责 |
