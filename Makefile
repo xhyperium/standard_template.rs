@@ -11,10 +11,10 @@ help: ## Show help
 
 .PHONY: build test fmt lint doc clean
 build: ## Build (--all-features)
-	@cargo build --all-features
+	@cargo build --workspace --all-features
 
 test: ## Run all tests
-	@cargo test --all-features
+	@cargo test --workspace --all-features
 
 fmt: ## Format all code
 	@cargo fmt --all
@@ -23,10 +23,10 @@ fmt-check: ## Check formatting (no modify)
 	@cargo fmt --all -- --check
 
 lint: ## Run clippy (-D warnings)
-	@cargo clippy --all-targets --all-features -- -D warnings
+	@cargo clippy --workspace --all-targets --all-features -- -D warnings
 
 doc: ## Build docs (including private items)
-	@cargo doc --no-deps --document-private-items
+	@cargo doc --workspace --no-deps --document-private-items
 
 clean: ## Clean build artifacts
 	@cargo clean
