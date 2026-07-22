@@ -12,6 +12,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  RUST_CACHE_PREFIX_KEY: "rust-cache-stdio-template"
+
 jobs:
   constitution:
     name: Constitution Check
@@ -63,7 +66,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         if: steps.scope.outputs.run_full == 'true'
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
 
       - name: Install cargo-deny
         if: steps.scope.outputs.run_full == 'true'

@@ -18,6 +18,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  RUST_CACHE_PREFIX_KEY: "rust-cache-stdio-template"
+
 jobs:
   build:
     name: Build & Check
@@ -31,7 +34,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
       - name: Check
         run: cargo check --all-features
       - name: Build
@@ -50,7 +53,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
       - name: Install cargo-nextest
         uses: taiki-e/install-action@v2
         with:
@@ -71,7 +74,7 @@ jobs:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
       - name: Format check
         run: cargo fmt --all -- --check
       - name: Clippy
@@ -90,7 +93,7 @@ jobs:
         uses: dtolnay/rust-toolchain@1.85
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
       - name: Build on MSRV
         run: cargo build --all-features
 
@@ -109,7 +112,7 @@ jobs:
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "rust-cache-stdio-template"
+          prefix-key: ${{ env.RUST_CACHE_PREFIX_KEY }}
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@v2
         with:
