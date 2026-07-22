@@ -4,6 +4,29 @@
 > 工具脚本：`scripts/worktree/worktree.mjs`、`scripts/worktree/worktree-policy.mjs`
 > 硬门禁：`.claude/hooks/pre-tool-check.mjs`（BLOCK）+ `session-context.mjs`（指引）
 
+
+## 目录
+
+- [原则](#原则)
+- [理由](#理由)
+- [强制规则](#强��规则)
+  - [1. 创建 Worktree](#1-创建-worktree唯一合法开工路径)
+  - [2. 目录约定](#2-目录约定)
+  - [3.1 自动分支名推导](#31-自动分支名推导无--b-标志时)
+  - [3.2 硬门禁](#32-硬门禁机器强制-block)
+  - [4. 禁止行为](#4-禁止行为)
+  - [5. 清理](#5-清理)
+- [紧急绕过](#紧急绕过人工-only)
+- [例外](#例外)
+- [开工检查清单](#开工检查清单agent)
+- [场景示例](#场景示例)
+  - [A: rebase main 后清理](#场景-arebase-main-后清理)
+  - [B: cherry-pick 到现有 worktree](#场景-bcherry-pick-到现有-worktree)
+  - [C: 跨 worktree 协作](#场���-c跨-worktree-协作)
+  - [D: 冲突修复后手动清理](#场景-dworktree-内冲突修复后手动清理)
+  - [E: CI 失败后修复](#场景-eci-失败后-worktree-修复流程)
+  - [F: 误在主仓编辑后恢复](#场景-f误在主仓编辑后恢复)
+- [相关文件](#相关文件)
 ---
 
 ## 原则
