@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "nice -n 19 timeout 30 node .claude/hooks/encoding-check.mjs || exit 2",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "description": "批量编码巡检",
+        "hooks": [
+          {
+            "command": "nice -n 19 timeout 15 node .claude/hooks/encoding-batch-check.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write"
+      }
+    ]
+  }
+}
