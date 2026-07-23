@@ -10,7 +10,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { resolve, relative } from 'node:path';
 
 const args = process.argv.slice(2);
@@ -105,7 +105,7 @@ function check() {
     // file 报 binary 时跳过（与 CI L1 一致）
     let enc = '';
     try {
-      enc = execSync(`file -b --mime-encoding "${fullPath}"`, { encoding: 'utf8' }).trim();
+      enc = execFileSync('file', ['-b', '--mime-encoding', fullPath], { encoding: 'utf8' }).trim();
     } catch {
       enc = '';
     }
