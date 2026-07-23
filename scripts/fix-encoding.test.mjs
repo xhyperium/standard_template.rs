@@ -153,7 +153,7 @@ try {
 // 4.b 含 GBK 文件 --check 应检测到
 try {
   tmpDir = makeTempDir();
-  // GBK 编码文件（架构）
+  // GBK 编码件（架构）
   writeFileSync(join(tmpDir, "gbk_test.md"), Buffer.from([0xbc, 0xdc, 0xb9, 0xb9, 0xce, 0xc4, 0xb5, 0xb5]));
   // 含 U+FFFD 文件
   const corrupt = Buffer.concat([

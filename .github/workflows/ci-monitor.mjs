@@ -8,7 +8,7 @@
  *   node scripts/workflow/ci-monitor.mjs                     # 检查最近一次运行
  *   node scripts/workflow/ci-monitor.mjs --watch             # 轮询直到全部完成
  *   node scripts/workflow/ci-monitor.mjs --json              # JSON 输出
- *   node scripts/workflow/ci-monitor.mjs --ref <branch>     # ���定分支
+ *   node scripts/workflow/ci-monitor.mjs --ref <branch>     # 指定分支
  */
 
 import { execSync } from "child_process";

@@ -32,10 +32,26 @@ jobs:
           done < <(find . -type f -not -path './.git/*' -not -path './node_modules/*' -not -path './.cargo/*' -not -path './target/*' -not -name '*.png' -not -name '*.jpg' -not -name '*.ico' -not -name '*.svg' -not -name '*.woff*' -not -name '*.lock' -print0)
           [ "$bad" -gt 0 ] && echo "❌ $bad 个非 UTF-8 文件" && exit 1
           echo "✅ UTF-8 / ASCII"
-      - name: U+FFFD 残留
+      - name: U+FFFD 残留（阻断）
         run: |
+          set -euo pipefail
           residue=0
           while IFS= read -r -d '' f; do
-            if grep -qP 'ï¿½' "$f" 2>/dev/null; then echo "⚠️ $f — 含 U+FFFD"; residue=$((residue+1)); fi
-          done < <(find . -type f -not -path './.git/*' -not -path './node_modules/*' -not -path './.cargo/*' -not -path './target/*' -not -name '*.png' -not -name '*.jpg' -not -name '*.ico' -not -name '*.svg' -not -name '*.woff*' -not -name '*.lock' -not -name '*.bin' -not -name '*.db' -print0)
-          [ "$residue" -gt 0 ] && echo "⚠️ $residue 个文件含 U+FFFD"
+            if grep -aFq $'\xef\xbf\xbd' "$f"; then
+              echo "❌ $f — 含 U+FFFD 替换字符（编码损坏）"
+              residue=$((residue+1))
+            fi
+          done < <(find . -type f \
+            -not -path './.git/*' -not -path './node_modules/*' \
+            -not -path './.cargo/*' -not -path './target/*' -not -path './.worktrees/*' \
+            -not -name '*.png' -not -name '*.jpg' -not -name '*.ico' -not -name '*.svg' \
+            -not -name '*.woff*' -not -name '*.lock' -not -name '*.bin' -not -name '*.db' \
+            \( -name '*.md' -o -name '*.rs' -o -name '*.toml' -o -name '*.yml' -o -name '*.yaml' \
+               -o -name '*.mjs' -o -name '*.js' -o -name '*.cjs' -o -name '*.json' -o -name '*.sh' \
+               -o -name '*.txt' \) -print0)
+          if [ "$residue" -gt 0 ]; then
+            echo "❌ $residue 个文件含 U+FFFD；请修复后重提 PR"
+            echo "   扫描: node scripts/fix-encoding.mjs --check"
+            exit 1
+          fi
+          echo "✅ 无 U+FFFD 残留"
